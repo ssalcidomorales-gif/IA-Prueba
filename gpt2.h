@@ -15,6 +15,7 @@
 #include "layers.h"
 #include "attention.h"
 #include "block.h"
+#include "kvcache.h"
 #include "safetensors.h"
 #include <vector>
 #include <string>
@@ -105,6 +106,47 @@ public:
             }
         }
         return mejor;
+    }
+
+    // ------------------------------------------------------------------
+    // FORWARD CON KV CACHE (Fase 1)
+    // ------------------------------------------------------------------
+    // Procesa UN SOLO token, reutilizando las keys/values de los anteriores.
+    //
+    //   token:    el ID del token nuevo
+    //   posicion: su posicion real en la secuencia (0, 1, 2, ...)
+    //             ESTO ES CRITICO: el positional embedding debe usar la
+    //             posicion real, no 0. Si se desalinea, el texto sale
+    //             gramatical pero distinto, y es dificil de detectar.
+    //   cache:    se actualiza dentro (una entrada por capa)
+    //
+    //   devuelve: logits [1 x 50257]
+    Matrix forward_con_cache(int token, int posicion, KVCache& cache) {
+        // 1. Embedding de ESTE token: wte[token] + wpe[posicion]
+        Matrix x(1, d_model);
+        for (int j = 0; j < d_model; j++)
+            x.at(0, j) = wte.at(token, j) + wpe.at(posicion, j);
+
+        // 2. Los 12 bloques, cada uno con su propio cache
+        for (int i = 0; i < num_capas; i++)
+            x = bloque_cache(x, bloques[i], num_cabezas, cache.capas[i]);
+
+        // 3. LayerNorm final
+        x = layernorm(x, ln_f_w, ln_f_b);
+
+        // 4. Proyeccion a logits [1 x 50257]
+        return x.matmul(wte.transpose());
+    }
+
+    // Procesa una secuencia completa llenando el cache desde cero.
+    // Util para el prompt inicial: mete todos los tokens de golpe y
+    // devuelve los logits del ultimo.
+    Matrix procesar_prompt(const std::vector<int>& tokens, KVCache& cache) {
+        cache.limpiar();
+        Matrix logits;
+        for (size_t i = 0; i < tokens.size(); i++)
+            logits = forward_con_cache(tokens[i], (int)i, cache);
+        return logits;
     }
 };
 

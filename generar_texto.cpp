@@ -16,8 +16,8 @@
 #include <random>
 
 int main(int argc, char** argv) {
-    std::string ruta_modelo = "C:\\Users\\ssalc\\source\\repos\\IA_prueba\\model.safetensors";
-    std::string ruta_vocab  = "C:\\Users\\ssalc\\source\\repos\\IA_prueba\\vocab.json";
+    std::string ruta_modelo = "C:/Users/Said/source/repos/IA_Prueba/IA_Prueba/model.safetensors";
+    std::string ruta_vocab = "C:/Users/Said/source/repos/IA_Prueba/IA_Prueba/vocab.json";
     if (argc >= 2) ruta_modelo = argv[1];
     if (argc >= 3) ruta_vocab = argv[2];
 
