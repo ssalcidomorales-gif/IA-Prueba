@@ -53,7 +53,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test_gguf.cpp">
+    <ClCompile Include="inspeccionar_gguf.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

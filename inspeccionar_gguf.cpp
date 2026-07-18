@@ -59,14 +59,8 @@ std::string valor_a_texto(const GGUFValor& v) {
 }
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Uso: inspeccionar_gguf <ruta_del_modelo.gguf>\n\n";
-        std::cout << "Ejemplo:\n";
-        std::cout << "  inspeccionar_gguf C:/Modelos/qwen2.5-0.5b-q4_0.gguf\n";
-        return 1;
-    }
-
-    std::string ruta = argv[1];
+    std::string ruta = "C:/Users/Said/source/repos/IA_Prueba/IA_Prueba/qwen2.5-0.5b-instruct-q4_0.gguf";
+    if (argc >= 2) ruta = argv[1];
     std::cout << "Abriendo: " << ruta << "\n\n";
 
     try {
