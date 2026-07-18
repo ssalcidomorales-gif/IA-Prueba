@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
     // "The quick brown fox"
     std::vector<int> prompt = {464, 2068, 7586, 21831};
-    const int A_GENERAR = 30;
+    const int A_GENERAR = 100;
 
     std::cout << "=== Comparacion: original vs KV cache ===\n";
     std::cout << "Prompt: '" << tok.decodificar(prompt) << "'\n";
