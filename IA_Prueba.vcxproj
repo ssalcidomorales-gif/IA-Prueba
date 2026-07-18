@@ -149,7 +149,7 @@
     <ClInclude Include="softmax.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="comparar_cache.cpp" />
+    <ClCompile Include="generar_texto.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
