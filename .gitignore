@@ -1,0 +1,78 @@
+# ============================================
+# Archivos del modelo (NO subir - son enormes)
+# ============================================
+# model.safetensors pesa 548 MB, vocab.json ~1 MB.
+# Se descargan con los comandos del README.
+*.safetensors
+vocab.json
+merges.txt
+*.bin
+*.gguf
+
+# ============================================
+# Binarios compilados
+# ============================================
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.o
+*.out
+*.app
+a.out
+
+# Ejecutables sin extension (Linux/Mac)
+test_matrix
+test_safetensors
+test_layers
+test_softmax
+test_attention
+test_multihead
+test_block
+test_decoder
+diagnostico
+generar_texto
+probar_gpt2
+prueba_final
+inspeccionar_gpt2
+
+# ============================================
+# Visual Studio
+# ============================================
+.vs/
+Debug/
+Release/
+x64/
+x86/
+*.user
+*.suo
+*.VC.db
+*.VC.opendb
+*.aps
+*.tlog
+*.log
+*.lastbuildstate
+*.idb
+*.iobj
+*.ipdb
+*.recipe
+*.exp
+*.lib
+
+# ============================================
+# CMake / Make
+# ============================================
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ============================================
+# Editores
+# ============================================
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
