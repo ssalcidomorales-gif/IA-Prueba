@@ -15,6 +15,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 class Matrix {
 public:
