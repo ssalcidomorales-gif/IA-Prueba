@@ -15,6 +15,7 @@
 
 #include "matrix.h"
 #include "softmax.h"
+#include "paralelo.h"
 #include <cmath>
 #include <limits>
 
@@ -71,7 +72,9 @@ Matrix atencion_una_cabeza(const Matrix& Q, const Matrix& K, const Matrix& V) {
 //   bias:    [1 x d_out]
 //   salida:  [n x d_out]
 Matrix lineal_conv1d(const Matrix& entrada, const Matrix& W, const Matrix& bias) {
-    Matrix salida = entrada.matmul(W);      // [n x d_out]
+    // matmul_paralelo reparte las filas entre hilos. Para matrices chicas
+    // cae automaticamente a la version secuencial.
+    Matrix salida = matmul_paralelo(entrada, W);      // [n x d_out]
     // sumar el bias a cada fila
     for (int i = 0; i < salida.rows; i++)
         for (int j = 0; j < salida.cols; j++)
@@ -100,9 +103,9 @@ Matrix sub_columnas(const Matrix& m, int col_ini, int ancho) {
 //   num_cabezas:  12 en GPT-2
 //   devuelve:     [n x 768]
 Matrix multi_head_attention(const Matrix& entrada,
-                            const Matrix& c_attn_w, const Matrix& c_attn_b,
-                            const Matrix& c_proj_w, const Matrix& c_proj_b,
-                            int num_cabezas) {
+    const Matrix& c_attn_w, const Matrix& c_attn_b,
+    const Matrix& c_proj_w, const Matrix& c_proj_b,
+    int num_cabezas) {
     int n = entrada.rows;
     int d = entrada.cols;               // 768
     int dim_cabeza = d / num_cabezas;   // 64
@@ -111,8 +114,8 @@ Matrix multi_head_attention(const Matrix& entrada,
     Matrix qkv = lineal_conv1d(entrada, c_attn_w, c_attn_b);
 
     // 2. Separar en Q, K, V -> cada uno [n x 768]
-    Matrix Q = sub_columnas(qkv, 0,     d);
-    Matrix K = sub_columnas(qkv, d,     d);
+    Matrix Q = sub_columnas(qkv, 0, d);
+    Matrix K = sub_columnas(qkv, d, d);
     Matrix V = sub_columnas(qkv, 2 * d, d);
 
     // 3. Para cada cabeza: tomar su trozo de 64 columnas y correr atencion.

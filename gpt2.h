@@ -88,7 +88,8 @@ public:
 
         // 4. proyeccion a logits usando weight tying (wte transpuesto)
         //    [n x 768] * [768 x 50257] = [n x 50257]
-        Matrix logits = x.matmul(wte.transpose());
+        //    Sin transponer explicitamente: ahorra copiar 38M de floats.
+        Matrix logits = matmul_transpuesta_paralelo(x, wte);
 
         return logits;
     }
@@ -135,7 +136,12 @@ public:
         x = layernorm(x, ln_f_w, ln_f_b);
 
         // 4. Proyeccion a logits [1 x 50257]
-        return x.matmul(wte.transpose());
+        //
+        // OJO: antes esto era x.matmul(wte.transpose()). Transponer wte
+        // significa copiar 50257*768 = 38 millones de floats EN CADA TOKEN.
+        // matmul_transpuesta_paralelo hace la misma cuenta leyendo wte por
+        // filas, sin copiar nada, y repartido entre hilos.
+        return matmul_transpuesta_paralelo(x, wte);
     }
 
     // Procesa una secuencia completa llenando el cache desde cero.

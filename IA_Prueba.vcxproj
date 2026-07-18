@@ -145,8 +145,10 @@
     <ClInclude Include="gpt2.h" />
     <ClInclude Include="layers.h" />
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="paralelo.h" />
     <ClInclude Include="safetensors.h" />
     <ClInclude Include="softmax.h" />
+    <ClInclude Include="threadpool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="generar_texto.cpp" />
