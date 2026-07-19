@@ -153,6 +153,7 @@
     <ClInclude Include="qwen_attention.h" />
     <ClInclude Include="qwen_ops.h" />
     <ClInclude Include="safetensors.h" />
+    <ClInclude Include="sampling.h" />
     <ClInclude Include="softmax.h" />
     <ClInclude Include="threadpool.h" />
   </ItemGroup>
