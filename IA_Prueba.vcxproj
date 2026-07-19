@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="attention.h" />
     <ClInclude Include="block.h" />
+    <ClInclude Include="bpe.h" />
     <ClInclude Include="cuantizacion.h" />
     <ClInclude Include="generacion.h" />
     <ClInclude Include="gguf.h" />
@@ -156,7 +157,7 @@
     <ClInclude Include="threadpool.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="probar_qwen.cpp" />
+    <ClCompile Include="chat_qwen.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

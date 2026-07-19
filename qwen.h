@@ -23,6 +23,7 @@
 #include "qwen_ops.h"
 #include "qwen_attention.h"
 #include "paralelo.h"
+#include "bpe.h"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -60,8 +61,10 @@ public:
 
     std::vector<BloqueQwen> bloques;
 
-    // Vocabulario para decodificar
+    // Vocabulario y tokenizador
     std::vector<std::string> tokens_texto;
+    BPE bpe;
+    int bos = -1, eos = -1;
 
     int dim_cabeza() const { return d_model / n_heads; }
     int dim_kv() const { return n_kv * dim_cabeza(); }
@@ -138,13 +141,91 @@ public:
                 std::cout << "  bloque " << (i+1) << "/" << num_capas << "\n";
         }
 
-        // --- Vocabulario ---
+        // --- Vocabulario y tokenizador ---
         if (auto* v = g.arreglo_textos("tokenizer.ggml.tokens")) {
             tokens_texto = *v;
             std::cout << "Vocabulario: " << tokens_texto.size() << " tokens\n";
+
+            // Construir el encoder BPE si el GGUF trae las reglas de fusion
+            if (auto* m = g.arreglo_textos("tokenizer.ggml.merges")) {
+                bpe.construir(tokens_texto, *m);
+                std::cout << "Tokenizador BPE: " << m->size() << " reglas\n";
+            } else {
+                std::cout << "Aviso: sin reglas de merge, no habra encoder\n";
+            }
         }
 
+        // Tokens especiales
+        bos = (int)g.entero("tokenizer.ggml.bos_token_id", -1);
+        eos = (int)g.entero("tokenizer.ggml.eos_token_id", -1);
+
         std::cout << "Modelo cargado.\n";
+    }
+
+    // ------------------------------------------------------------------
+    // Texto -> tokens
+    // ------------------------------------------------------------------
+    // Los tokens especiales como <|im_start|> deben reconocerse ANTES de
+    // pasar por BPE; si no, el algoritmo los partiria en pedazos ("<", "|",
+    // "im", "_start"...). Asi que buscamos esos marcadores primero y solo
+    // tokenizamos el texto que hay entre ellos.
+    std::vector<int> codificar(const std::string& texto) {
+        static const std::vector<std::string> especiales = {
+            "<|im_start|>", "<|im_end|>", "<|endoftext|>"
+        };
+
+        std::vector<int> ids;
+        size_t i = 0;
+
+        while (i < texto.size()) {
+            // Buscar el proximo token especial
+            size_t pos_min = std::string::npos;
+            const std::string* cual = nullptr;
+            for (const auto& esp : especiales) {
+                size_t p = texto.find(esp, i);
+                if (p != std::string::npos && p < pos_min) {
+                    pos_min = p;
+                    cual = &esp;
+                }
+            }
+
+            if (cual == nullptr) {
+                // No hay mas especiales: tokenizar el resto
+                if (i < texto.size()) {
+                    auto sub = bpe.codificar(texto.substr(i));
+                    ids.insert(ids.end(), sub.begin(), sub.end());
+                }
+                break;
+            }
+
+            // Tokenizar lo que hay antes del especial
+            if (pos_min > i) {
+                auto sub = bpe.codificar(texto.substr(i, pos_min - i));
+                ids.insert(ids.end(), sub.begin(), sub.end());
+            }
+
+            // Agregar el especial como un solo token
+            int id = bpe.id_de(*cual);
+            if (id >= 0) ids.push_back(id);
+
+            i = pos_min + cual->size();
+        }
+
+        return ids;
+    }
+
+    // Arma un prompt en formato ChatML de Qwen:
+    //   <|im_start|>system\n{sistema}<|im_end|>\n
+    //   <|im_start|>user\n{usuario}<|im_end|>\n
+    //   <|im_start|>assistant\n
+    std::vector<int> armar_chat(const std::string& usuario,
+                                const std::string& sistema = "") {
+        std::string p;
+        if (!sistema.empty())
+            p += "<|im_start|>system\n" + sistema + "<|im_end|>\n";
+        p += "<|im_start|>user\n" + usuario + "<|im_end|>\n";
+        p += "<|im_start|>assistant\n";
+        return codificar(p);
     }
 
     // ------------------------------------------------------------------
