@@ -51,9 +51,18 @@
     <ClInclude Include="gguf.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="qwen_ops.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="qwen_attention.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="qwen.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="inspeccionar_gguf.cpp">
+    <ClCompile Include="probar_qwen.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

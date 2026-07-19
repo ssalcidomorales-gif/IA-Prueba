@@ -148,12 +148,15 @@
     <ClInclude Include="layers.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="paralelo.h" />
+    <ClInclude Include="qwen.h" />
+    <ClInclude Include="qwen_attention.h" />
+    <ClInclude Include="qwen_ops.h" />
     <ClInclude Include="safetensors.h" />
     <ClInclude Include="softmax.h" />
     <ClInclude Include="threadpool.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="inspeccionar_gguf.cpp" />
+    <ClCompile Include="probar_qwen.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
