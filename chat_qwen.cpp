@@ -40,8 +40,7 @@ void mostrar_ayuda() {
 int main(int argc, char** argv) {
     configurar_consola();
 
-    std::string ruta =
-        "C:/Users/Said/source/repos/IA_Prueba/IA_Prueba/qwen2.5-0.5b-instruct-q4_0.gguf";
+    std::string ruta = "C:/Users/Said/source/repos/IA_Prueba/IA_Prueba/qwen2.5-1.5b-instruct-q4_0.gguf";
     if (argc >= 2) ruta = argv[1];
 
     std::cout << "=== Chat con Qwen (motor propio en C++) ===\n\n";

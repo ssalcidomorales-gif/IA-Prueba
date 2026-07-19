@@ -35,81 +35,85 @@
 // Los valores numericos son los que aparecen en el campo "type" de cada
 // tensor dentro del archivo GGUF. No los inventamos: son el enum de ggml.
 enum GGMLType : uint32_t {
-    GGML_F32     = 0,
-    GGML_F16     = 1,
-    GGML_Q4_0    = 2,
-    GGML_Q4_1    = 3,
+    GGML_F32 = 0,
+    GGML_F16 = 1,
+    GGML_Q4_0 = 2,
+    GGML_Q4_1 = 3,
     // 4 y 5 quedaron obsoletos (Q4_2, Q4_3)
-    GGML_Q5_0    = 6,
-    GGML_Q5_1    = 7,
-    GGML_Q8_0    = 8,
-    GGML_Q8_1    = 9,
-    GGML_Q2_K    = 10,
-    GGML_Q3_K    = 11,
-    GGML_Q4_K    = 12,
-    GGML_Q5_K    = 13,
-    GGML_Q6_K    = 14,
-    GGML_Q8_K    = 15,
+    GGML_Q5_0 = 6,
+    GGML_Q5_1 = 7,
+    GGML_Q8_0 = 8,
+    GGML_Q8_1 = 9,
+    GGML_Q2_K = 10,
+    GGML_Q3_K = 11,
+    GGML_Q4_K = 12,
+    GGML_Q5_K = 13,
+    GGML_Q6_K = 14,
+    GGML_Q8_K = 15,
 };
 
 inline const char* nombre_tipo(uint32_t t) {
     switch (t) {
-        case GGML_F32:  return "F32";
-        case GGML_F16:  return "F16";
-        case GGML_Q4_0: return "Q4_0";
-        case GGML_Q4_1: return "Q4_1";
-        case GGML_Q5_0: return "Q5_0";
-        case GGML_Q5_1: return "Q5_1";
-        case GGML_Q8_0: return "Q8_0";
-        case GGML_Q8_1: return "Q8_1";
-        case GGML_Q2_K: return "Q2_K";
-        case GGML_Q3_K: return "Q3_K";
-        case GGML_Q4_K: return "Q4_K";
-        case GGML_Q5_K: return "Q5_K";
-        case GGML_Q6_K: return "Q6_K";
-        case GGML_Q8_K: return "Q8_K";
-        default:        return "DESCONOCIDO";
+    case GGML_F32:  return "F32";
+    case GGML_F16:  return "F16";
+    case GGML_Q4_0: return "Q4_0";
+    case GGML_Q4_1: return "Q4_1";
+    case GGML_Q5_0: return "Q5_0";
+    case GGML_Q5_1: return "Q5_1";
+    case GGML_Q8_0: return "Q8_0";
+    case GGML_Q8_1: return "Q8_1";
+    case GGML_Q2_K: return "Q2_K";
+    case GGML_Q3_K: return "Q3_K";
+    case GGML_Q4_K: return "Q4_K";
+    case GGML_Q5_K: return "Q5_K";
+    case GGML_Q6_K: return "Q6_K";
+    case GGML_Q8_K: return "Q8_K";
+    default:        return "DESCONOCIDO";
     }
 }
 
 // Cuantos valores hay en cada bloque de este tipo
 inline int elementos_por_bloque(uint32_t tipo) {
     switch (tipo) {
-        case GGML_F32:
-        case GGML_F16:  return 1;
-        case GGML_Q4_0:
-        case GGML_Q4_1:
-        case GGML_Q5_0:
-        case GGML_Q5_1:
-        case GGML_Q8_0:
-        case GGML_Q8_1: return 32;
+    case GGML_F32:
+    case GGML_F16:  return 1;
+    case GGML_Q4_0:
+    case GGML_Q4_1:
+    case GGML_Q5_0:
+    case GGML_Q5_1:
+    case GGML_Q8_0:
+    case GGML_Q8_1: return 32;
         // Los K-quants usan super-bloques de 256
-        case GGML_Q2_K:
-        case GGML_Q3_K:
-        case GGML_Q4_K:
-        case GGML_Q5_K:
-        case GGML_Q6_K:
-        case GGML_Q8_K: return 256;
-        default: return 0;
+    case GGML_Q2_K:
+    case GGML_Q3_K:
+    case GGML_Q4_K:
+    case GGML_Q5_K:
+    case GGML_Q6_K:
+    case GGML_Q8_K: return 256;
+    default: return 0;
     }
 }
 
 // Cuantos BYTES ocupa cada bloque
 inline int bytes_por_bloque(uint32_t tipo) {
     switch (tipo) {
-        case GGML_F32:  return 4;
-        case GGML_F16:  return 2;
+    case GGML_F32:  return 4;
+    case GGML_F16:  return 2;
         // Q4_0: escala fp16 (2) + 32 valores a 4 bits (16) = 18
-        case GGML_Q4_0: return 18;
+    case GGML_Q4_0: return 18;
         // Q4_1: escala + minimo (4) + 16 = 20
-        case GGML_Q4_1: return 20;
+    case GGML_Q4_1: return 20;
         // Q5_0: escala (2) + bits altos (4) + nibbles (16) = 22
-        case GGML_Q5_0: return 22;
-        case GGML_Q5_1: return 24;
+    case GGML_Q5_0: return 22;
+    case GGML_Q5_1: return 24;
         // Q8_0: escala fp16 (2) + 32 int8 (32) = 34
-        case GGML_Q8_0: return 34;
-        case GGML_Q8_1: return 36;
-        default: return 0;
+    case GGML_Q8_0: return 34;
+    case GGML_Q8_1: return 36;
+        // K-quants: super-bloques de 256 valores
+        // Q6_K: ql(128) + qh(64) + scales(16) + d(2) = 210
+    case GGML_Q4_K: return 144;
+    case GGML_Q6_K: return 210;
+    default: return 0;
     }
 }
 
@@ -124,16 +128,17 @@ inline int bytes_por_bloque(uint32_t tipo) {
 //   bits 14-10: exponente (5 bits, sesgo 15)
 //   bits 9-0  : mantisa (10 bits)
 inline float fp16_a_fp32(uint16_t h) {
-    uint32_t signo     = (uint32_t)(h & 0x8000) << 16;
+    uint32_t signo = (uint32_t)(h & 0x8000) << 16;
     uint32_t exponente = (h >> 10) & 0x1F;
-    uint32_t mantisa   =  h & 0x03FF;
+    uint32_t mantisa = h & 0x03FF;
 
     uint32_t bits;
     if (exponente == 0) {
         if (mantisa == 0) {
             // Cero (con signo)
             bits = signo;
-        } else {
+        }
+        else {
             // Subnormal: normalizarlo desplazando hasta que el bit
             // implicito quede en su lugar
             exponente = 127 - 15 + 1;
@@ -144,10 +149,12 @@ inline float fp16_a_fp32(uint16_t h) {
             mantisa &= 0x03FF;
             bits = signo | (exponente << 23) | (mantisa << 13);
         }
-    } else if (exponente == 0x1F) {
+    }
+    else if (exponente == 0x1F) {
         // Infinito o NaN
         bits = signo | 0x7F800000 | (mantisa << 13);
-    } else {
+    }
+    else {
         // Normal: reajustar el sesgo del exponente (15 -> 127)
         bits = signo | ((exponente - 15 + 127) << 23) | (mantisa << 13);
     }
@@ -170,7 +177,7 @@ inline float fp16_a_fp32(uint16_t h) {
 // bajo del byte j da el valor j, y el nibble alto da el valor j+16.
 // Ese entrelazado es intencional en ggml (facilita el SIMD).
 inline void dequantizar_q4_0(const uint8_t* datos, int num_bloques,
-                             float* salida) {
+    float* salida) {
     for (int b = 0; b < num_bloques; b++) {
         const uint8_t* bloque = datos + (size_t)b * 18;
 
@@ -183,9 +190,9 @@ inline void dequantizar_q4_0(const uint8_t* datos, int num_bloques,
 
         for (int j = 0; j < 16; j++) {
             uint8_t byte = qs[j];
-            int bajo  = (byte & 0x0F) - 8;    // valor j
-            int alto  = (byte >>   4) - 8;    // valor j+16
-            dest[j]      = bajo * d;
+            int bajo = (byte & 0x0F) - 8;    // valor j
+            int alto = (byte >> 4) - 8;    // valor j+16
+            dest[j] = bajo * d;
             dest[j + 16] = alto * d;
         }
     }
@@ -197,7 +204,7 @@ inline void dequantizar_q4_0(const uint8_t* datos, int num_bloques,
 //   bytes 4-19: los nibbles
 // Aqui los nibbles son 0..15 sin restar nada: valor = q*d + m
 inline void dequantizar_q4_1(const uint8_t* datos, int num_bloques,
-                             float* salida) {
+    float* salida) {
     for (int b = 0; b < num_bloques; b++) {
         const uint8_t* bloque = datos + (size_t)b * 20;
 
@@ -212,8 +219,8 @@ inline void dequantizar_q4_1(const uint8_t* datos, int num_bloques,
 
         for (int j = 0; j < 16; j++) {
             uint8_t byte = qs[j];
-            dest[j]      = (byte & 0x0F) * d + m;
-            dest[j + 16] = (byte >>   4) * d + m;
+            dest[j] = (byte & 0x0F) * d + m;
+            dest[j + 16] = (byte >> 4) * d + m;
         }
     }
 }
@@ -223,7 +230,7 @@ inline void dequantizar_q4_1(const uint8_t* datos, int num_bloques,
 //   bytes 2-33: 32 enteros con signo de 8 bits
 // El mas simple de todos: valor = q * d
 inline void dequantizar_q8_0(const uint8_t* datos, int num_bloques,
-                             float* salida) {
+    float* salida) {
     for (int b = 0; b < num_bloques; b++) {
         const uint8_t* bloque = datos + (size_t)b * 34;
 
@@ -245,7 +252,7 @@ inline void dequantizar_q8_0(const uint8_t* datos, int num_bloques,
 //   bytes 6-21: los 4 bits bajos, dos por byte
 // El bit extra se saca de qh y se pega arriba del nibble.
 inline void dequantizar_q5_0(const uint8_t* datos, int num_bloques,
-                             float* salida) {
+    float* salida) {
     for (int b = 0; b < num_bloques; b++) {
         const uint8_t* bloque = datos + (size_t)b * 22;
 
@@ -265,16 +272,155 @@ inline void dequantizar_q5_0(const uint8_t* datos, int num_bloques,
             int bit_bajo = (int)((qh >> j) & 1) << 4;
             int bit_alto = (int)((qh >> (j + 16)) & 1) << 4;
             int q_bajo = ((byte & 0x0F) | bit_bajo) - 16;
-            int q_alto = ((byte >>   4) | bit_alto) - 16;
-            dest[j]      = q_bajo * d;
+            int q_alto = ((byte >> 4) | bit_alto) - 16;
+            dest[j] = q_bajo * d;
             dest[j + 16] = q_alto * d;
+        }
+    }
+}
+
+// ----------------------------------------------------------------------
+// K-QUANTS: super-bloques de 256 con escalas jerarquicas
+// ----------------------------------------------------------------------
+// Los formatos que vimos hasta ahora (Q4_0, Q8_0) usan bloques de 32 con
+// UNA escala cada uno. Los K-quants van mas fino: agrupan 256 valores en
+// un "super-bloque", lo dividen en sub-bloques de 16, y guardan:
+//   - una escala global en fp16 para todo el super-bloque
+//   - una escala pequena (int8) por cada sub-bloque
+//
+// La escala real de cada sub-bloque es: d_global * escala_subbloque.
+// Esa jerarquia captura mejor las variaciones locales, por eso los
+// K-quants dan mejor calidad que los formatos clasicos al mismo tamano.
+
+// Q6_K: 256 valores en 210 bytes (6.5625 bits por peso)
+//
+//   ql[128]     los 4 bits BAJOS de cada valor (dos valores por byte)
+//   qh[64]      los 2 bits ALTOS (cuatro valores por byte)
+//   scales[16]  escalas int8, una por sub-bloque de 16 valores
+//   d           escala global fp16
+//
+// Cada valor de 6 bits (rango 0..63) se arma juntando su nibble de ql
+// con sus 2 bits de qh, y luego se centra restando 32.
+//
+// EL EMPAQUETADO
+// No es secuencial: ggml procesa el super-bloque en dos mitades de 128,
+// y dentro de cada mitad reparte los valores en cuatro grupos de 32 con
+// un entrelazado especifico. Replicamos exactamente ese patron.
+inline void dequantizar_q6_k(const uint8_t* datos, int num_bloques,
+    float* salida) {
+    for (int b = 0; b < num_bloques; b++) {
+        const uint8_t* bloque = datos + (size_t)b * 210;
+
+        const uint8_t* ql = bloque;              // 128 bytes
+        const uint8_t* qh = bloque + 128;        // 64 bytes
+        const int8_t* scales = (const int8_t*)(bloque + 192);  // 16 bytes
+
+        uint16_t d_bits;
+        std::memcpy(&d_bits, bloque + 208, 2);
+        float d = fp16_a_fp32(d_bits);
+
+        float* y = salida + (size_t)b * 256;
+
+        // El super-bloque se procesa en dos mitades de 128 valores
+        for (int mitad = 0; mitad < 2; mitad++) {
+            const uint8_t* ql_m = ql + mitad * 64;
+            const uint8_t* qh_m = qh + mitad * 32;
+            const int8_t* sc_m = scales + mitad * 8;
+            float* y_m = y + mitad * 128;
+
+            // Dentro de cada mitad, cuatro grupos de 32 valores.
+            // Cada grupo toma sus bits de posiciones distintas.
+            for (int l = 0; l < 32; l++) {
+                int8_t is = (int8_t)(l / 16);   // que sub-escala usar
+
+                // Grupo 0: nibble bajo de ql[l],    bits 0-1 de qh[l]
+                int q1 = (int)((ql_m[l] & 0x0F) | (((qh_m[l] >> 0) & 3) << 4)) - 32;
+                // Grupo 1: nibble bajo de ql[l+32], bits 2-3 de qh[l]
+                int q2 = (int)((ql_m[l + 32] & 0x0F) | (((qh_m[l] >> 2) & 3) << 4)) - 32;
+                // Grupo 2: nibble alto de ql[l],    bits 4-5 de qh[l]
+                int q3 = (int)((ql_m[l] >> 4) | (((qh_m[l] >> 4) & 3) << 4)) - 32;
+                // Grupo 3: nibble alto de ql[l+32], bits 6-7 de qh[l]
+                int q4 = (int)((ql_m[l + 32] >> 4) | (((qh_m[l] >> 6) & 3) << 4)) - 32;
+
+                y_m[l] = d * sc_m[is + 0] * q1;
+                y_m[l + 32] = d * sc_m[is + 2] * q2;
+                y_m[l + 64] = d * sc_m[is + 4] * q3;
+                y_m[l + 96] = d * sc_m[is + 6] * q4;
+            }
+        }
+    }
+}
+
+
+// Q4_K: 256 valores en 144 bytes (4.5 bits por peso). El mas usado.
+//
+//   d           escala global fp16
+//   dmin        minimo global fp16
+//   scales[12]  escalas y minimos, empaquetados a 6 bits
+//   qs[128]     los quants de 4 bits
+//
+// A diferencia de Q6_K (simetrico), Q4_K guarda tambien un MINIMO por
+// sub-bloque: el valor se reconstruye como  q * escala - minimo.
+// Eso captura mejor distribuciones que no estan centradas en cero.
+//
+// EL EMPAQUETADO DE LAS ESCALAS
+// 8 sub-bloques necesitan 8 escalas y 8 minimos, todos de 6 bits:
+// 96 bits = 12 bytes. Se guardan con un esquema donde los primeros
+// 4 bytes llevan escalas, los siguientes 4 los minimos, y los ultimos
+// 4 los bits altos de ambos.
+inline void obtener_escalas_min_k4(const uint8_t* q, int j,
+    uint8_t& d, uint8_t& m) {
+    if (j < 4) {
+        d = q[j] & 63;
+        m = q[j + 4] & 63;
+    }
+    else {
+        d = (q[j + 4] & 0x0F) | ((q[j - 4] >> 6) << 4);
+        m = (q[j + 4] >> 4) | ((q[j] >> 6) << 4);
+    }
+}
+
+inline void dequantizar_q4_k(const uint8_t* datos, int num_bloques,
+    float* salida) {
+    for (int b = 0; b < num_bloques; b++) {
+        const uint8_t* bloque = datos + (size_t)b * 144;
+
+        uint16_t d_bits, dmin_bits;
+        std::memcpy(&d_bits, bloque, 2);
+        std::memcpy(&dmin_bits, bloque + 2, 2);
+        float d = fp16_a_fp32(d_bits);
+        float dmin = fp16_a_fp32(dmin_bits);
+
+        const uint8_t* scales = bloque + 4;    // 12 bytes
+        const uint8_t* qs = bloque + 16;   // 128 bytes
+
+        float* y = salida + (size_t)b * 256;
+        int is = 0;
+
+        // 4 grupos de 64 valores; cada grupo usa 2 sub-escalas
+        for (int j = 0; j < 256; j += 64) {
+            uint8_t sc, mn;
+
+            obtener_escalas_min_k4(scales, is + 0, sc, mn);
+            float d1 = d * sc, m1 = dmin * mn;
+
+            obtener_escalas_min_k4(scales, is + 1, sc, mn);
+            float d2 = d * sc, m2 = dmin * mn;
+
+            for (int l = 0; l < 32; l++)
+                y[j + l] = d1 * (qs[l] & 0x0F) - m1;
+            for (int l = 0; l < 32; l++)
+                y[j + l + 32] = d2 * (qs[l] >> 4) - m2;
+
+            qs += 32;
+            is += 2;
         }
     }
 }
 
 // F16: conversion directa
 inline void dequantizar_f16(const uint8_t* datos, int num_elementos,
-                            float* salida) {
+    float* salida) {
     const uint16_t* src = (const uint16_t*)datos;
     for (int i = 0; i < num_elementos; i++)
         salida[i] = fp16_a_fp32(src[i]);
@@ -288,38 +434,46 @@ inline void dequantizar_f16(const uint8_t* datos, int num_elementos,
 //   tipo:         GGMLType
 //   num_elementos: cuantos valores tiene el tensor
 inline std::vector<float> dequantizar(const uint8_t* datos, uint32_t tipo,
-                                      size_t num_elementos) {
+    size_t num_elementos) {
     std::vector<float> salida(num_elementos);
 
     switch (tipo) {
-        case GGML_F32:
-            std::memcpy(salida.data(), datos, num_elementos * 4);
-            break;
+    case GGML_F32:
+        std::memcpy(salida.data(), datos, num_elementos * 4);
+        break;
 
-        case GGML_F16:
-            dequantizar_f16(datos, (int)num_elementos, salida.data());
-            break;
+    case GGML_F16:
+        dequantizar_f16(datos, (int)num_elementos, salida.data());
+        break;
 
-        case GGML_Q4_0:
-            dequantizar_q4_0(datos, (int)(num_elementos / 32), salida.data());
-            break;
+    case GGML_Q4_0:
+        dequantizar_q4_0(datos, (int)(num_elementos / 32), salida.data());
+        break;
 
-        case GGML_Q4_1:
-            dequantizar_q4_1(datos, (int)(num_elementos / 32), salida.data());
-            break;
+    case GGML_Q4_1:
+        dequantizar_q4_1(datos, (int)(num_elementos / 32), salida.data());
+        break;
 
-        case GGML_Q5_0:
-            dequantizar_q5_0(datos, (int)(num_elementos / 32), salida.data());
-            break;
+    case GGML_Q5_0:
+        dequantizar_q5_0(datos, (int)(num_elementos / 32), salida.data());
+        break;
 
-        case GGML_Q8_0:
-            dequantizar_q8_0(datos, (int)(num_elementos / 32), salida.data());
-            break;
+    case GGML_Q8_0:
+        dequantizar_q8_0(datos, (int)(num_elementos / 32), salida.data());
+        break;
 
-        default:
-            throw std::runtime_error(
-                std::string("Tipo de cuantizacion no soportado: ") +
-                nombre_tipo(tipo) + " (" + std::to_string(tipo) + ")");
+    case GGML_Q4_K:
+        dequantizar_q4_k(datos, (int)(num_elementos / 256), salida.data());
+        break;
+
+    case GGML_Q6_K:
+        dequantizar_q6_k(datos, (int)(num_elementos / 256), salida.data());
+        break;
+
+    default:
+        throw std::runtime_error(
+            std::string("Tipo de cuantizacion no soportado: ") +
+            nombre_tipo(tipo) + " (" + std::to_string(tipo) + ")");
     }
 
     return salida;

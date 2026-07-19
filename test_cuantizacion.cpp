@@ -155,7 +155,7 @@ int main() {
     {
         uint8_t basura[64] = {0};
         bool lanzo = false;
-        try { dequantizar(basura, GGML_Q4_K, 256); }
+        try { dequantizar(basura, GGML_Q2_K, 256); }  // Q2_K sigue sin soporte
         catch (const std::exception&) { lanzo = true; }
         afirmar("tipo no soportado lanza error", lanzo);
     }
